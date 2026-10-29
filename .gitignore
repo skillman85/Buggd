@@ -1,4 +1,9 @@
 # Logs
+test-results/
+playwright-report/
+/lib/
+*.tgz
+.buggd/
 logs
 *.log
 npm-debug.log*
@@ -147,3 +152,12 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Private local verification evidence; retained on disk, never published
+.local-publication-archive/
+docs/screenshots/
+docs/qa/
+output/
+docs/*verification.json
+
+docs/brand/previews/
