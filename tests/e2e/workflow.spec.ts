@@ -153,9 +153,20 @@ test.describe("real dashboard workflow", () => {
     await expect(
       page.getByRole("button", { name: "Cancel scan", exact: true }),
     ).toBeVisible();
+    const request = page.waitForRequest(
+      (request) =>
+        request.url().endsWith("/cancel") && request.method() === "POST",
+      { timeout: 5000 },
+    );
+    const response = page.waitForResponse(
+      (response) => response.url().endsWith("/cancel"),
+      { timeout: 10000 },
+    );
     await page
       .getByRole("button", { name: "Cancel scan", exact: true })
       .click();
+    await request;
+    expect((await response).ok()).toBe(true);
     await expect(page.locator(".results-heading .scan-status")).toHaveText(
       "cancelled",
       { timeout: 10000 },

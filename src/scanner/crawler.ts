@@ -1,3 +1,5 @@
+import { debuglog } from "node:util";
+const trace = debuglog("buggd");
 import { randomUUID } from "node:crypto";
 import type { Scan, PageReport } from "../shared/schemas.js";
 import type { Storage } from "../reports/storage.js";
@@ -35,12 +37,14 @@ export async function crawl(
   await policy.resolve(new URL(scan.url));
   signal.throwIfAborted();
   const runtime = await launchBrowser(policy);
+  trace("browser launched; aborted=%s", signal.aborted);
   // Cancellation can arrive while Chromium starts, before its abort listener exists.
   if (signal.aborted) {
     await runtime.close();
     signal.throwIfAborted();
   }
   const abort = () => {
+    trace("crawler abort listener");
     closePublicAssets(policy);
     void runtime.close().catch(() => {});
   };
