@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { startFixture } from "../../fixtures/server";
 import { startV11Fixture } from "../../fixtures/v11";
 import { resultCounts } from "../../src/reporting/issue-presentation";
 import type { Scan } from "../../src/shared/schemas";
@@ -193,3 +194,44 @@ for (const theme of ["light", "dark"] as const) {
     }
   });
 }
+
+test("reconciles completed reports when live events cannot be delivered", async ({
+  page,
+}) => {
+  const fixture = await startV11Fixture();
+  try {
+    await page.route("**/api/scans/*/events", (route) => route.abort());
+    await page.goto("/");
+    await page.getByLabel("Website URL", { exact: true }).fill(fixture.url);
+    await page.getByText("Scan settings", { exact: true }).click();
+    await page.getByLabel("Maximum pages").fill("1");
+    await page.getByLabel("Inspect safe interactions").uncheck();
+    await page.getByRole("button", { name: "Start scan", exact: true }).click();
+    await expect(page.locator(".results-heading .scan-status")).toHaveText(
+      "completed",
+      { timeout: 30000 },
+    );
+    await expect(page.locator(".report-summary")).toBeVisible();
+    const slow = await startFixture();
+    try {
+      await page.goto("/");
+      await page
+        .getByLabel("Website URL", { exact: true })
+        .fill(`${slow.url}/slow`);
+      await page
+        .getByRole("button", { name: "Start scan", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "Cancel scan", exact: true })
+        .click();
+      await expect(page.locator(".results-heading .scan-status")).toHaveText(
+        "cancelled",
+        { timeout: 10000 },
+      );
+    } finally {
+      await slow.close();
+    }
+  } finally {
+    await fixture.close();
+  }
+});
