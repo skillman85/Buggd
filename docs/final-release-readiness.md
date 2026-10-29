@@ -1,6 +1,6 @@
 # Final release-readiness audit
 
-**Current decision: Ready for public release review — Yes.** All six Windows, Ubuntu and macOS Node 22/24 jobs passed for source commit `078d5a1877089033b801fdf12c65aa822f63d132`. Earlier sections below are historical checkpoints; the final validation record supersedes their pending statuses. Publication remains separately approval-gated.
+**Current decision: Ready for public release review — Yes.** The complete [Windows/Ubuntu/macOS Node 22/24 matrix](https://github.com/skillman85/Buggd/actions/runs/40929027132) passed for source commit `a32bf87479f6691761f9ca88af066b92bff143e9`. The final follow-up record below supersedes historical pending/failure decisions. Only `release-validation` was pushed; no merge, npm publication, release or deployment occurred.
 
 29 October 2026 · **1.1.0-rc.1** · macOS ARM64 / Node 22.17.0
 
@@ -137,7 +137,7 @@ Public documentation replaces saved-site names/URLs, scan identifiers and person
 Security review: sanitised candidate Gitleaks **Passed**; existing Git history **Passed**; unpacked npm tarball **Passed**. No broad exclusions in Gitleaks. Typecheck, lint, production build, 68 unit/integration tests and 24 browser tests passed. The tarball is restricted by the package files allowlist and excludes private QA/screenshots/reports. Cross-platform CI results remain pending until actual execution; see the subsequent validation record when available.
 
 
-# Authorised GitHub validation — actual results
+# Historical GitHub validation — superseded by follow-up below
 
 Branch: `release-validation`. Validated source commit: `078d5a1877089033b801fdf12c65aa822f63d132`.
 
@@ -157,4 +157,58 @@ The [first matrix](https://github.com/skillman85/Buggd/actions/runs/40891089742)
 
 Original history remains intact. The default branch remains at `67cdb22a3e712f61deaae90397671c55dc10053d`. Only the validation branch was pushed, without force. History Gitleaks passed after the code commits. Original runtime files were hash-verified unchanged. Private report/screenshots and generated evidence remain local and ignored; no secrets or credentials were printed or added to the commit.
 
-**Remaining release blockers: none identified by the requested verification gates. Ready for public release review: Yes.** This is not permission to merge, publish, deploy or create a release. Normal review, package ownership/provenance and explicit publication approval still apply. Documented bounded scanning, resource interference, partial accessibility coverage and screenshot privacy limitations remain.
+**Historical decision (superseded): Ready for public release review: Yes.** This is not permission to merge, publish, deploy or create a release. Normal review, package ownership/provenance and explicit publication approval still apply. Documented bounded scanning, resource interference, partial accessibility coverage and screenshot privacy limitations remain.
+
+
+# Follow-up validation and cancellation regression
+
+The earlier six-job success did not establish stable cancellation on Windows. Subsequent runs reproduced a cancellation API request waiting indefinitely and later scans remaining queued. [Run 40926165023](https://github.com/skillman85/Buggd/actions/runs/40926165023) passed five jobs but failed Windows Node 24 browser tests. These failures were retained and investigated, not hidden by disabling tests or increasing their timeouts.
+
+Fixes since the historical pass:
+
+- Added protected API reconciliation when live event delivery is interrupted, plus a real browser regression that checks completion and cancellation with the event stream blocked.
+- Checked cancellation immediately after Chromium startup, covering an abort arriving before the browser listener is registered; a deterministic scanner regression verifies no page is inspected.
+- Closed proxy sockets concurrently with Chromium and shared cleanup across cancellation/finalisation. Previously cleanup waited for Chromium before disconnecting the proxy. A regression models browser shutdown waiting for proxy disconnection and checks repeated cleanup occurs once.
+- Serialized browser workers in CI while retaining all browser scenarios and existing deadlines. This alone did not resolve the failure; later failures are recorded above.
+
+Validated source: `a32bf87479f6691761f9ca88af066b92bff143e9`, branch `release-validation`. [Successful full six-job run](https://github.com/skillman85/Buggd/actions/runs/40929027132).
+
+[Follow-up run 40927225653](https://github.com/skillman85/Buggd/actions/runs/40927225653) still failed live cancellation on Windows Node 24. Temporary lifecycle tracing in [40928063764](https://github.com/skillman85/Buggd/actions/runs/40928063764) showed the request arriving, abort signalling, and browser/proxy closure completing, while the crawler's worker batch remained pending. Unfinished jobs in superseded runs were cancelled automatically by the existing branch concurrency policy; they are not counted as passes.
+
+The final fix makes the worker-batch wait abort-aware while retaining awaited browser/proxy cleanup before terminal persistence. A real-scanner regression deliberately stalls context close and verifies cancellation still completes. Temporary lifecycle tracing was removed before the successful final matrix.
+
+Local follow-up: **Passed** — 71 unit/integration tests across 14 files, 25 browser tests, typecheck, lint, production build, npm pack and clean tarball/compiled CLI/dashboard smoke. Initial local rerun lacked the expected Playwright browser binary; browser provisioning completed and the full rerun passed. Gitleaks found no leaks in updated history or the rebuilt unpacked tarball. Original runtime preservation was rechecked: 237 original files, zero changed and zero missing. Generated reports and private evidence remain ignored and local.
+
+| Platform | Node 22 | Node 24 |
+| --- | --- | --- |
+| Windows | [Passed](https://github.com/skillman85/Buggd/actions/runs/40929027132/job/123642405600) | [Passed](https://github.com/skillman85/Buggd/actions/runs/40929027132/job/123642405484) |
+| Ubuntu Linux | [Passed](https://github.com/skillman85/Buggd/actions/runs/40929027132/job/123642405172) | [Passed](https://github.com/skillman85/Buggd/actions/runs/40929027132/job/123642405592) |
+| macOS | [Passed](https://github.com/skillman85/Buggd/actions/runs/40929027132/job/123642405843) | [Passed](https://github.com/skillman85/Buggd/actions/runs/40929027132/job/123642405813) |
+
+Actual logs were downloaded and reviewed: each job reports **71 unit/integration tests**, **25 browser tests**, and successful clean package installation. Every job passed dependency installation, Chromium provisioning, typecheck, lint, production build, package creation and compiled CLI/dashboard smoke. No test was disabled and no assertion deadline was increased.
+
+## Final security and preservation record
+
+All four original detections used Gitleaks `generic-api-key` and occurred in `grouping.key` in the retained, excluded generated JSON report. Values are deliberately not reproduced.
+
+| Original report line | Classification | Origin/privacy | Disposition |
+| --- | --- | --- | --- |
+| 4563 | False positive: truncated SHA-256 grouping fingerprint; no credential | Synthetic scan finding grouping, not a private identity or authentication token | Generated original preserved locally, excluded from Git/package |
+| 4668 | False positive: truncated SHA-256 grouping fingerprint; no credential | Synthetic scan finding grouping, not a private identity or authentication token | Same; no suppression |
+| 4985 | False positive: truncated SHA-256 grouping fingerprint; no credential | Synthetic scan finding grouping, not a private identity or authentication token | Same; no suppression |
+| 5195 | False positive: truncated SHA-256 grouping fingerprint; no credential | Synthetic scan finding grouping, not a private identity or authentication token | Same; no suppression |
+
+No credential rotation is indicated by those findings. Although these values are not secrets, generated reports can contain paths and website evidence, so the full originals remain excluded. Public source and package scans used default Gitleaks rules with no broad exceptions.
+
+| Gate | Status | Evidence / remaining limitation | Blocks release review? |
+| --- | --- | --- | --- |
+| Publication candidate | Passed | Exact tracked source exported and scanned; no leaks. Private scan/QA/output exclusions and public examples reviewed. | No |
+| Git history | Passed | Full current branch history scanned; no leaks; original history preserved. | No |
+| npm tarball | Passed | Full manifest reviewed, unpacked contents scanned; no leaks or private reports/screenshots. Runtime assets/notices retained. | No |
+| Local data preservation | Passed | All 237 original runtime files hash-verified unchanged and present; original reports/QA retained locally. | No |
+| Local tests/build/package | Passed | 71 unit/integration, 25 browser tests, typecheck, lint, build, clean tarball install/CLI smoke. | No |
+| Cross-platform execution | Passed | Six actual runner jobs linked above, including Windows cancellation and package smoke. | No |
+
+The report-only follow-up commit does not change the validated application, tests or workflow. Its commit message skips redundant CI for documentation only; all source checks above refer explicitly to the tested source revision. The report was security-reviewed before publication.
+
+**Outstanding release blockers: none identified within the requested gates. Ready for public release review: Yes.** Bounded scan coverage, partial accessibility coverage and screenshot privacy limitations remain documented. This decision authorises review only; no default-branch merge, public release, npm publication or external deployment was performed.
