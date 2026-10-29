@@ -221,9 +221,20 @@ test("reconciles completed reports when live events cannot be delivered", async 
       await page
         .getByRole("button", { name: "Start scan", exact: true })
         .click();
+      const cancellation = page.waitForResponse(
+        (response) =>
+          response.url().endsWith("/cancel") &&
+          response.request().method() === "POST",
+        { timeout: 10000 },
+      );
       await page
         .getByRole("button", { name: "Cancel scan", exact: true })
         .click();
+      const response = await cancellation;
+      expect(await response.text(), "Cancellation API response").toContain(
+        '"status":"cancelled"',
+      );
+      expect(response.ok()).toBe(true);
       await expect(page.locator(".results-heading .scan-status")).toHaveText(
         "cancelled",
         { timeout: 10000 },
