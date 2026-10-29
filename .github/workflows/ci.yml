@@ -36,8 +36,6 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run test:e2e
-        env:
-          NODE_DEBUG: buggd
       - run: npm pack --dry-run
       - run: npm pack
       - run: npm run package:smoke

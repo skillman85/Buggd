@@ -1,5 +1,3 @@
-import { debuglog } from "node:util";
-const trace = debuglog("buggd");
 import { randomUUID } from "node:crypto";
 import type { Scan, PageReport } from "../shared/schemas.js";
 import type { Storage } from "../reports/storage.js";
@@ -37,14 +35,12 @@ export async function crawl(
   await policy.resolve(new URL(scan.url));
   signal.throwIfAborted();
   const runtime = await launchBrowser(policy);
-  trace("browser launched; aborted=%s", signal.aborted);
   // Cancellation can arrive while Chromium starts, before its abort listener exists.
   if (signal.aborted) {
     await runtime.close();
     signal.throwIfAborted();
   }
   const abort = () => {
-    trace("crawler abort listener");
     closePublicAssets(policy);
     void runtime.close().catch(() => {});
   };
@@ -256,7 +252,7 @@ export async function crawl(
     } finally {
       report.duration = Date.now() - start;
       await context.close().catch(() => {});
-      progress();
+      if (!signal.aborted) progress();
     }
   };
   try {
@@ -268,7 +264,21 @@ export async function crawl(
         cursor + scan.settings.concurrency,
       );
       cursor += batch.length;
-      const results = await Promise.allSettled(batch.map(inspect));
+      // Chromium can close while a protocol/context operation remains pending.
+      // Cancellation must release the worker batch; runtime cleanup below still
+      // waits for the browser and proxy to close before the scan becomes terminal.
+      const results = await new Promise<PromiseSettledResult<void>[]>(
+        (resolve, reject) => {
+          const cancelled = () => reject(signal.reason);
+          signal.addEventListener("abort", cancelled, { once: true });
+          Promise.allSettled(batch.map(inspect))
+            .then(resolve, reject)
+            .finally(() => {
+              signal.removeEventListener("abort", cancelled);
+            });
+          if (signal.aborted) cancelled();
+        },
+      );
       signal.throwIfAborted();
       if (runtime.limited())
         throw new Error(

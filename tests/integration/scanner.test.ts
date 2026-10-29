@@ -146,6 +146,41 @@ describe("real Chromium scanner", () => {
       spy.mockRestore();
     }
   });
+  it("cancels even when a page context close remains pending after browser shutdown", async () => {
+    const original = browserRuntime.guardedContext;
+    let entered!: () => void;
+    const pending = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    let release!: () => void;
+    const stalled = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const spy = vi
+      .spyOn(browserRuntime, "guardedContext")
+      .mockImplementationOnce(async (...args) => {
+        const runtime = await original(...args);
+        vi.spyOn(runtime.context, "close").mockImplementation(async () => {
+          entered();
+          await stalled;
+        });
+        return runtime;
+      });
+    const manager = new ScanManager(storage, () => []);
+    try {
+      const scan = await manager.create(
+        scanInputSchema.parse({ url: fixture.url + "/clean", maxPages: 1 }),
+      );
+      await pending;
+      await manager.cancel(scan.id);
+      expect(scan.status).toBe("cancelled");
+      expect(scan.finishedAt).toBeTruthy();
+    } finally {
+      release();
+      spy.mockRestore();
+      await manager.close();
+    }
+  });
   it("cancels a live scan and persists its terminal status", async () => {
     const manager = new ScanManager(storage, () => []);
     await manager.init();

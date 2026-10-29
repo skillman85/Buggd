@@ -1,5 +1,3 @@
-import { debuglog } from "node:util";
-const trace = debuglog("buggd");
 import { chromium } from "playwright";
 import type { Browser, BrowserContext } from "playwright";
 import type { Scan } from "../shared/schemas.js";
@@ -38,16 +36,12 @@ export async function launchBrowser(policy: NetworkPolicy) {
       browser,
       limited: proxy.limited,
       close: () => {
-        trace("runtime close requested");
         closePublicAssets(policy);
         // Break pending proxy connections before waiting for Chromium shutdown.
         // Share cleanup when cancellation and the crawler's finally both close.
         closing ??= Promise.all([
-          proxy.close().then(() => trace("proxy closed")),
-          browser
-            .close()
-            .then(() => trace("browser closed"))
-            .catch(() => {}),
+          proxy.close(),
+          browser.close().catch(() => {}),
         ]).then(() => {});
         return closing;
       },

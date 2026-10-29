@@ -1,5 +1,3 @@
-import { debuglog } from "node:util";
-const trace = debuglog("buggd");
 import { EventEmitter } from "node:events";
 import { randomUUID } from "node:crypto";
 import type { Scan, ScanInput } from "../shared/schemas.js";
@@ -167,15 +165,12 @@ export class ScanManager extends EventEmitter {
     }
   }
   async cancel(id: string) {
-    trace("cancel received");
     const scan = this.scans.get(id);
     if (!scan || terminal(scan.status)) return;
     if (this.active?.id === id) {
       this.active.cancelled = true;
       this.active.controller.abort(new Error("Cancelled by user."));
-      trace("abort signalled");
       await this.active.promise;
-      trace("cancel cleanup complete");
     } else {
       this.queue = this.queue.filter((item) => item !== id);
       scan.status = "cancelled";
