@@ -6,7 +6,8 @@ export default defineConfig({
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
-  workers: 2,
+  // CI runners share CPU with the real scanner Chromium process. Avoid competing owner journeys.
+  workers: process.env.CI ? 1 : 2,
   use: { baseURL: "http://127.0.0.1:4173", browserName: "chromium" },
   webServer: {
     command: "node lib/cli/index.js --no-open --port 4173",
