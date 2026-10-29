@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0-rc.1 — Unreleased
+## 1.1.0 — Prepared for first public npm release
 
 - Corrected Simple-mode Issues UX: expandable topic/element folders, explicit count hierarchy, real element descriptions and separate coverage limits; Technical retains its table and evidence.
 - Investigated actual saved naming warnings with offline fragment replay, preserved all original observations, added both-theme acceptance tests and captured the real saved report UI.
@@ -25,4 +25,4 @@
 - Approved olive/lime themes, self-hosted fonts, reusable SVG logos and app assets.
 - Defective fixtures, scanner/API/browser tests, CI and clean-package verification tooling.
 
-This candidate has not been published. Review [release acceptance](docs/release-review.md) and [known limitations](docs/security.md).
+Publication must be verified independently on npm. Review [release acceptance](docs/release-review.md) and [known limitations](docs/security.md).
