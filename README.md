@@ -94,7 +94,30 @@ Buggd keeps **confirmed findings**, **things to check**, and **checks not perfor
 
 ## Screenshots
 
-We’ll add actual light/dark dashboard, issue inspector and guided-fix screenshots after a fresh Buggd run. They will be reviewed for sensitive URLs, identifiers and personal data before being committed. **No fabricated interface or private scan screenshots are included.**
+The images below are captured from the real Buggd interface during an authorised scan of [Wannabyte](https://www.wannabyte.co.uk/). They show the release-candidate UI; findings and counts are observations from that scan, **not promises about every site**.
+
+### Start a scan
+
+![Buggd new scan screen showing its local-first URL form and scan settings](docs/media/new-scan.webp)
+
+### Watch checks run
+
+![Buggd scanning progress with page counts and distinct confirmed, potential and not-performed observations](docs/media/live-progress.webp)
+
+### Understand findings
+
+![Buggd Simple mode groups potential website accessibility findings and names affected elements](docs/media/issues.webp)
+
+### Follow a guided fix
+
+![Buggd six-step guided fixing workflow, including issue selection and rescan verification](docs/media/guided-fixing.webp)
+
+### Highlight an affected element
+
+![Buggd highlighting a website navigation link in its screenshot evidence](docs/media/highlighted-element.webp)
+
+> **Evidence caveat:** In the final image, Buggd warns that some website resources were blocked. The captured site therefore may not look the way it does to normal visitors. Findings marked **Worth checking** require human review. Original screenshot versions and scan data stay local; only these manually selected, metadata-stripped illustrations are intended to be public.
+
 
 ## Local-first by design
 
