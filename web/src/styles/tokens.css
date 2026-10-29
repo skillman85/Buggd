@@ -1,0 +1,87 @@
+:root {
+  color-scheme: light;
+  --cream: #faf9f1;
+  --olive-900: #0f1b12;
+  --olive-700: #1e3a1f;
+  --olive-500: #4d7c0f;
+  --lime-400: #a3e635;
+  --lime-300: #c7f464;
+  --slate-400: #94a3b8;
+  --slate-700: #334155;
+
+  --background: var(--cream);
+  --surface: #fffdf7;
+  --surface-muted: #f1f0e6;
+  --foreground: #111b14;
+  --muted-foreground: #526057;
+  --border: #dfe2d5;
+  --primary: var(--lime-400);
+  --primary-hover: #b5ee50;
+  --primary-foreground: var(--olive-900);
+  --secondary: var(--olive-900);
+  --secondary-foreground: var(--cream);
+  --accent: var(--olive-500);
+  --accent-muted: #edf3de;
+  --focus: #3c670b;
+  --brand-icon: var(--olive-500);
+  --brand-wordmark: #080d0a;
+  --brand-dot: var(--lime-400);
+  --danger: #ae223a;
+  --destructive-foreground: var(--cream);
+  --danger-surface: #ffe8e9;
+  --warning: #805000;
+  --warning-surface: #fff1c8;
+  --info: #1d4fb0;
+  --info-surface: #e7eeff;
+  --success: #186534;
+  --success-surface: #e0f3de;
+  --shadow: 0 8px 24px rgb(15 27 18 / 4%);
+  --font-heading: "Plus Jakarta Sans", "Avenir Next", sans-serif;
+  --font-interface: "Google Sans Code", "SFMono-Regular", Consolas, monospace;
+  --radius: 12px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #09130f;
+  --surface: var(--olive-900);
+  --surface-muted: #17281c;
+  --foreground: var(--cream);
+  --muted-foreground: #adbbaf;
+  --border: #304334;
+  --primary: var(--lime-300);
+  --primary-hover: #d6ff85;
+  --primary-foreground: var(--olive-900);
+  --secondary: #213b28;
+  --secondary-foreground: var(--cream);
+  --accent: var(--lime-300);
+  --accent-muted: #23381c;
+  --focus: var(--lime-300);
+  --brand-icon: var(--lime-300);
+  --brand-wordmark: var(--cream);
+  --brand-dot: var(--lime-300);
+  --danger: #ffacb8;
+  --destructive-foreground: var(--olive-900);
+  --danger-surface: #451f29;
+  --warning: #f8d47a;
+  --warning-surface: #3b3015;
+  --info: #a9c7ff;
+  --info-surface: #1c2c47;
+  --success: #a0e7b5;
+  --success-surface: #163d2b;
+  --shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+/* Fixed brand canvases use explicit variants, independent of the UI theme. */
+[data-brand-canvas="light"] {
+  background: var(--cream);
+  color: var(--olive-900);
+}
+[data-brand-canvas="dark"] {
+  background: var(--olive-900);
+  color: var(--cream);
+}
+[data-brand-canvas="lime"] {
+  background: var(--lime-400);
+  color: var(--olive-900);
+}

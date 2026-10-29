@@ -1,0 +1,21 @@
+name: Bug report
+description: Report an evidence-backed issue in Buggd.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe expected and observed behaviour. Remove sensitive URLs and screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it safely?
+      description: Prefer a small local fixture over a private or authenticated website.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Buggd version, OS and Node.js version
