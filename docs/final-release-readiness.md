@@ -1,5 +1,7 @@
 # Final release-readiness audit
 
+**Current decision: Ready for public release review — Yes.** All six Windows, Ubuntu and macOS Node 22/24 jobs passed for source commit `078d5a1877089033b801fdf12c65aa822f63d132`. Earlier sections below are historical checkpoints; the final validation record supersedes their pending statuses. Publication remains separately approval-gated.
+
 29 October 2026 · **1.1.0-rc.1** · macOS ARM64 / Node 22.17.0
 
 ## Executive decision
@@ -133,3 +135,26 @@ Private screenshots, saved-site QA evidence and generated reports are retained l
 Public documentation replaces saved-site names/URLs, scan identifiers and personal home paths with synthetic examples. Intentionally public author/copyright and repository metadata remain. Source, synthetic fixtures, approved branding, fonts/licences and CI remain included. Historical evidence links were converted to descriptions of local artefacts rather than dangling public links.
 
 Security review: sanitised candidate Gitleaks **Passed**; existing Git history **Passed**; unpacked npm tarball **Passed**. No broad exclusions in Gitleaks. Typecheck, lint, production build, 68 unit/integration tests and 24 browser tests passed. The tarball is restricted by the package files allowlist and excludes private QA/screenshots/reports. Cross-platform CI results remain pending until actual execution; see the subsequent validation record when available.
+
+
+# Authorised GitHub validation — actual results
+
+Branch: `release-validation`. Validated source commit: `078d5a1877089033b801fdf12c65aa822f63d132`.
+
+[Successful six-job matrix](https://github.com/skillman85/Buggd/actions/runs/40891389690).
+
+| Platform | Node 22 | Node 24 |
+| --- | --- | --- |
+| Windows | [Passed](https://github.com/skillman85/Buggd/actions/runs/40891389690/job/123508830437) | [Passed](https://github.com/skillman85/Buggd/actions/runs/40891389690/job/123508831199) |
+| Ubuntu Linux | [Passed](https://github.com/skillman85/Buggd/actions/runs/40891389690/job/123508831219) | [Passed](https://github.com/skillman85/Buggd/actions/runs/40891389690/job/123508830988) |
+| macOS | [Passed](https://github.com/skillman85/Buggd/actions/runs/40891389690/job/123508830890) | [Passed](https://github.com/skillman85/Buggd/actions/runs/40891389690/job/123508830599) |
+
+Each job executed npm ci, Chromium provisioning, typecheck, lint, unit/integration tests, production build, browser tests, pack dry run, actual pack and clean tarball/compiled CLI/dashboard smoke. No tests were disabled. This is actual runner execution, not inferred platform compatibility.
+
+## Failure and fixes
+
+The [first matrix](https://github.com/skillman85/Buggd/actions/runs/40891089742) failed typecheck on all platforms because the broad `lib/` ignore omitted required `web/src/lib/` source utilities from the clean checkout. Root-scoping the build ignore to `/lib/` and tracking the security-reviewed utilities fixed the failure. Manual dispatch initially returned 404 because the workflow was absent from the default branch; enabling the existing push workflow for `release-validation` started validation without modifying main.
+
+Original history remains intact. The default branch remains at `67cdb22a3e712f61deaae90397671c55dc10053d`. Only the validation branch was pushed, without force. History Gitleaks passed after the code commits. Original runtime files were hash-verified unchanged. Private report/screenshots and generated evidence remain local and ignored; no secrets or credentials were printed or added to the commit.
+
+**Remaining release blockers: none identified by the requested verification gates. Ready for public release review: Yes.** This is not permission to merge, publish, deploy or create a release. Normal review, package ownership/provenance and explicit publication approval still apply. Documented bounded scanning, resource interference, partial accessibility coverage and screenshot privacy limitations remain.
