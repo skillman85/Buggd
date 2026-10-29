@@ -1,7 +1,7 @@
 # Logs
 test-results/
 playwright-report/
-lib/
+/lib/
 *.tgz
 .buggd/
 logs
