@@ -35,6 +35,11 @@ export async function crawl(
   await policy.resolve(new URL(scan.url));
   signal.throwIfAborted();
   const runtime = await launchBrowser(policy);
+  // Cancellation can arrive while Chromium starts, before its abort listener exists.
+  if (signal.aborted) {
+    await runtime.close();
+    signal.throwIfAborted();
+  }
   const abort = () => {
     closePublicAssets(policy);
     void runtime.browser.close().catch(() => {});

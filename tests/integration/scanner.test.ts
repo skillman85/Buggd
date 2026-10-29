@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { mkdtemp, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -9,6 +9,7 @@ import { crawl, scanLimitations } from "../../src/scanner/crawler.js";
 import { scanInputSchema } from "../../src/shared/schemas.js";
 import type { Scan } from "../../src/shared/schemas.js";
 import { htmlReport } from "../../src/reports/html.js";
+import * as browserRuntime from "../../src/scanner/browser.js";
 import { ScanManager } from "../../src/scanner/manager.js";
 
 describe("real Chromium scanner", () => {
@@ -124,6 +125,26 @@ describe("real Chromium scanner", () => {
           issue.confidence === "potential",
       ),
     ).toBe(true);
+  });
+  it("honours cancellation received during Chromium startup before inspecting any page", async () => {
+    const controller = new AbortController();
+    const original = browserRuntime.launchBrowser;
+    const spy = vi
+      .spyOn(browserRuntime, "launchBrowser")
+      .mockImplementationOnce(async (policy) => {
+        const runtime = await original(policy);
+        controller.abort(new Error("Cancelled during startup"));
+        return runtime;
+      });
+    try {
+      const scan = makeScan(fixture.url + "/slow");
+      await expect(
+        crawl(scan, storage, controller.signal, [], () => {}),
+      ).rejects.toThrow("Cancelled during startup");
+      expect(scan.pages).toEqual([]);
+    } finally {
+      spy.mockRestore();
+    }
   });
   it("cancels a live scan and persists its terminal status", async () => {
     const manager = new ScanManager(storage, () => []);
