@@ -24,7 +24,7 @@
 
 ---
 
-**Release status:** The source for **Buggd v1.1.0** is public and has passed Windows, Ubuntu and macOS CI on Node.js 22 and 24. **The npm package is not published:** the registry has blocked the unscoped name \`buggd\` pending a name review. The intended public command remains \`npx buggd\`, but **it will not install this application until npm publication succeeds**.
+**Release status:** The source for **Buggd v1.1.0** is public and has passed Windows, Ubuntu and macOS CI on Node.js 22 and 24. **The npm package is not published:** the registry has blocked the unscoped name `buggd` pending a name review. The intended public command remains `npx buggd`, but **it will not install this application until npm publication succeeds**.
 
 Buggd is a free, MIT-licensed website scanning and testing tool. Enter a website URL, let Chromium inspect it, then use a visual dashboard to understand what was observed, where it happened and what to check or fix. It runs on your computer — no signup, hosted account, paid API or mandatory AI service.
 
@@ -41,34 +41,34 @@ Most website checks tell you that something is wrong. Buggd aims to show **which
 
 Until npm approves the package name, this is the working way to try Buggd. You need [Node.js 22.12+](https://nodejs.org/en/download), npm and Git.
 
-\`\`\`bash
+```bash
 git clone https://github.com/skillman85/Buggd.git
 cd Buggd
 npm ci
 npm run browser:install
 npm run build
 npm start
-\`\`\`
+```
 
-Buggd prints a local address and normally opens its dashboard in your browser. Enter a URL for a site you **own or have permission to test**, then choose **Start scan**. Scan history and screenshots are saved locally (by default under \`~/.buggd\`). Stop the server with **Ctrl+C**.
+Buggd prints a local address and normally opens its dashboard in your browser. Enter a URL for a site you **own or have permission to test**, then choose **Start scan**. Scan history and screenshots are saved locally (by default under `~/.buggd`). Stop the server with **Ctrl+C**.
 
 For local development instead of the compiled application:
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
-The development UI runs at \`http://127.0.0.1:5173\`. On Linux, Chromium may additionally need operating-system dependencies; see [development setup](docs/development.md).
+The development UI runs at `http://127.0.0.1:5173`. On Linux, Chromium may additionally need operating-system dependencies; see [development setup](docs/development.md).
 
 ### Planned one-command install
 
-Once npm approves and publishes the **unscoped** \`buggd\` package, the intended command is:
+Once npm approves and publishes the **unscoped** `buggd` package, the intended command is:
 
-\`\`\`bash
+```bash
 npx buggd
-\`\`\`
+```
 
-If Chromium is missing, Buggd offers an installation flow, or you can run \`npx buggd --install-browser\`. **These npm commands are not available for Buggd yet.** We will update this section when the actual registry install is independently verified.
+If Chromium is missing, Buggd offers an installation flow, or you can run `npx buggd --install-browser`. **These npm commands are not available for Buggd yet.** We will update this section when the actual registry install is independently verified.
 
 ## What Buggd checks
 
@@ -112,7 +112,7 @@ The [release-readiness report](docs/final-release-readiness.md) documents the cr
 
 Run the checks yourself:
 
-\`\`\`bash
+```bash
 npm run typecheck
 npm run lint
 npm test
@@ -121,7 +121,7 @@ npm run test:e2e
 npm pack --dry-run
 npm pack
 npm run package:smoke
-\`\`\`
+```
 
 The generated tarball contains the compiled CLI and frontend. A local tarball smoke test is **not** the same as a successful public npm installation.
 
