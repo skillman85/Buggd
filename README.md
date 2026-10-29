@@ -9,7 +9,24 @@
 
 Buggd is a local-first, open-source website testing application by **James Hillman — James Builds Tech**. Enter a URL, run a real Chromium scan, and inspect evidence-backed findings without writing test journeys or creating an account.
 
-This is an **unpublished v1.1 release candidate**. It has a functioning scanner and dashboard; release review and platform limitations are tracked in [v1.1 completion review](docs/v1.1-completion-review.md). The package remains private until publication is approved. Do not assume `npx buggd` resolves to this code on the public npm registry.
+This repository contains the **v1.1.0 release-ready source**. Cross-platform validation and documented limitations are tracked in the [release-readiness report](docs/final-release-readiness.md). **The npm package is not live until its first publication is verified on the public registry.**
+
+## Quick start — npm publication
+
+Requires **Node.js 22.12+** and npm. After `buggd@1.1.0` has been published and verified on the [npm registry](https://www.npmjs.com/package/buggd), launch Buggd with:
+
+```sh
+npx buggd
+```
+
+The local dashboard opens in your browser. If Chromium is missing, install it once and launch again:
+
+```sh
+npx buggd --install-browser
+npx buggd
+```
+
+Buggd runs locally with no account, telemetry or cloud service. Scan only websites you own or have permission to test. The [security guide](docs/security.md) explains coverage and limitations.
 
 ## Run from source
 
@@ -56,9 +73,7 @@ There are no accounts, analytics, cloud databases, AI calls or automatic uploads
 
 ## Actual interface
 
-The screenshots below come from the running application and an actual saved saved-site report, not fabricated scan data.
-
-
+Representative application screenshots will be added after a fresh Buggd run against a safe, synthetic demonstration website. No private saved-site evidence is included in this repository.
 
 
 See the [Issues-screen review](docs/issues-screen-review.md) for the corrected hierarchy, count definitions and read-only investigation of the actual saved naming findings.
@@ -89,7 +104,7 @@ npm run package:smoke
 To install the generated candidate in another local directory:
 
 ```sh
-npm install /absolute/path/to/Buggd/buggd-1.1.0-rc.1.tgz
+npm install /absolute/path/to/Buggd/buggd-1.1.0.tgz
 npx --no-install buggd --install-browser
 npx --no-install buggd
 ```
