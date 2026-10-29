@@ -42,7 +42,7 @@ export async function crawl(
   }
   const abort = () => {
     closePublicAssets(policy);
-    void runtime.browser.close().catch(() => {});
+    void runtime.close().catch(() => {});
   };
   signal.addEventListener("abort", abort, { once: true });
   let cursor = 0;

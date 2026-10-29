@@ -31,13 +31,19 @@ export async function launchBrowser(policy: NetworkPolicy) {
         "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
       ],
     });
+    let closing: Promise<void> | undefined;
     return {
       browser,
       limited: proxy.limited,
-      close: async () => {
+      close: () => {
         closePublicAssets(policy);
-        await browser.close().catch(() => {});
-        await proxy.close();
+        // Break pending proxy connections before waiting for Chromium shutdown.
+        // Share cleanup when cancellation and the crawler's finally both close.
+        closing ??= Promise.all([
+          proxy.close(),
+          browser.close().catch(() => {}),
+        ]).then(() => {});
+        return closing;
       },
     };
   } catch (error) {
